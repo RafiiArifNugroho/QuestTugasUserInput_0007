@@ -1,6 +1,7 @@
 ﻿package com.example.questtugasuserinput4
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,8 +26,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -39,6 +44,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -51,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
@@ -59,9 +67,14 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.example.questtugasuserinput4.ui.theme.Questtugasuserinput4Theme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +95,8 @@ private fun dimenSp(id: Int): TextUnit =
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BiodataScreen() {
+    val context = LocalContext.current
+
     var firstName by rememberSaveable { mutableStateOf("") }
     var lastName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
@@ -94,6 +109,15 @@ fun BiodataScreen() {
 
     val skills = stringArrayResource(R.array.skill_list)
     val experiences = stringArrayResource(R.array.experience_list)
+    val datePattern = stringResource(R.string.date_pattern)
+    val successMessage = stringResource(R.string.message_success)
+
+    val isFormValid = firstName.isNotBlank() &&
+            lastName.isNotBlank() &&
+            email.isNotBlank() &&
+            birthDate.isNotBlank() &&
+            experience.isNotBlank() &&
+            selectedSkills.isNotEmpty()
 
     val fieldShape = RoundedCornerShape(dimensionResource(R.dimen.field_corner))
     val fieldColors = OutlinedTextFieldDefaults.colors(
@@ -116,6 +140,7 @@ fun BiodataScreen() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            // ===== Banner + indikator =====
             val bannerCount = integerResource(R.integer.banner_count)
             val pagerState = rememberPagerState(pageCount = { bannerCount })
 
@@ -156,6 +181,7 @@ fun BiodataScreen() {
                 }
             }
 
+            // ===== Box mengapung di atas Scaffold =====
             val cardShape = RoundedCornerShape(
                 topStart = dimensionResource(R.dimen.card_corner),
                 topEnd = dimensionResource(R.dimen.card_corner)
@@ -199,6 +225,7 @@ fun BiodataScreen() {
                     )
                     Spacer(Modifier.height(dimensionResource(R.dimen.spacing_large)))
 
+                    // Nama depan & belakang
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
@@ -227,6 +254,7 @@ fun BiodataScreen() {
 
                     Spacer(Modifier.height(dimensionResource(R.dimen.spacing_medium)))
 
+                    // Email
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -240,6 +268,7 @@ fun BiodataScreen() {
 
                     Spacer(Modifier.height(dimensionResource(R.dimen.spacing_medium)))
 
+                    // Tanggal lahir & experience
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
@@ -303,6 +332,7 @@ fun BiodataScreen() {
 
                     Spacer(Modifier.height(dimensionResource(R.dimen.spacing_medium)))
 
+                    // Skill
                     Text(
                         text = stringResource(R.string.label_skill),
                         color = colorResource(R.color.text_primary),
@@ -339,8 +369,71 @@ fun BiodataScreen() {
                             }
                         }
                     }
+
+                    Spacer(Modifier.height(dimensionResource(R.dimen.spacing_large)))
+
+                    // Tombol Proceed
+                    Button(
+                        onClick = {
+                            Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
+                        },
+                        enabled = isFormValid,
+                        shape = RoundedCornerShape(dimensionResource(R.dimen.button_corner)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.button_enabled),
+                            contentColor = colorResource(R.color.button_text),
+                            disabledContainerColor = colorResource(R.color.button_disabled),
+                            disabledContentColor = colorResource(R.color.button_text)
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimensionResource(R.dimen.button_height))
+                    ) {
+                        Text(
+                            text = stringResource(R.string.button_proceed),
+                            fontSize = dimenSp(R.dimen.text_button),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
     }
+
+    // ===== Date Picker =====
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val sdf = SimpleDateFormat(datePattern, Locale.getDefault()).apply {
+                            timeZone = TimeZone.getTimeZone("UTC")
+                        }
+                        birthDate = sdf.format(Date(millis))
+                    }
+                    showDatePicker = false
+                }) {
+                    Text(stringResource(R.string.dialog_ok))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(stringResource(R.string.dialog_cancel))
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun BiodataScreenPreview() {
+    Questtugasuserinput4Theme {
+        BiodataScreen()
+    }
+}
+
