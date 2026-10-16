@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">questuserinput</string>
+
+    <string name="form_title">Form Biodata</string>
+    <string name="form_subtitle">Silahkan isi biodata Anda dibawah ini !!!</string>
+    <string name="hint_first_name">Nama Depan</string>
+    <string name="hint_last_name">Nama Belakang</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_birth_date">Tgl Lahir</string>
+    <string name="hint_experience">Experience</string>
+    <string name="label_skill">Pilih Skill Anda :</string>
+    <string name="button_proceed">Proceed</string>
+
+    <string name="date_pattern">dd/MM/yyyy</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Batal</string>
+    <string name="message_success">Biodata berhasil disimpan</string>
+
+    <string name="cd_banner">Gambar banner neon</string>
+    <string name="cd_pick_date">Pilih tanggal lahir</string>
+
+    <string-array name="experience_list">
+        <item>&lt; 1 Tahun</item>
+        <item>1 - 3 Tahun</item>
+        <item>3 - 5 Tahun</item>
+        <item>&gt; 5 Tahun</item>
+    </string-array>
+
+    <string-array name="skill_list">
+        <item>Android</item>
+        <item>UI/UX</item>
+        <item>Web</item>
+    </string-array>
+</resources>
